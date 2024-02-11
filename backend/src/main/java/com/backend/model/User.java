@@ -13,6 +13,8 @@ public class User {
     private String lastname;
     private String location;
 
+    private String bio;
+
 
     private Integer ethnicity;
 

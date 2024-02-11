@@ -8,18 +8,18 @@ import jakarta.persistence.Table;
 @Table(name = "course_table")
 public class Course {
     @Id
-    private Integer key;
+    private Integer id;
 
     private String course;
 
 
     public Course(Integer key, String course) {
-        this.key = key;
+        this.id = key;
         this.course = course;
     }
 
     public Course() {
-        this.key = null;
+        this.id = null;
         this.course = null;
     }
 

@@ -9,18 +9,18 @@ import jakarta.persistence.Table;
 
 public class Year {
     @Id
-    private Integer key;
+    private Integer id;
 
     private String year;
 
 
     public Year(Integer key, String year) {
-        this.key = key;
+        this.id = key;
         this.year = year;
     }
 
     public Year() {
-        this.key = null;
+        this.id = null;
         this.year = null;
     }
 

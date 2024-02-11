@@ -9,18 +9,18 @@ import jakarta.persistence.Table;
 
 public class Ethnicity {
     @Id
-    private Integer key;
+    private Integer id;
 
     private String ethnicity;
 
 
     public Ethnicity(Integer key, String ethnicity) {
-        this.key = key;
+        this.id = key;
         this.ethnicity = ethnicity;
     }
 
     public Ethnicity() {
-        this.key = null;
+        this.id = null;
         this.ethnicity = null;
     }
 
