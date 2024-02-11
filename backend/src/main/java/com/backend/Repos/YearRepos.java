@@ -1,7 +1,5 @@
 package com.backend.Repos;
 
-import com.backend.Model.Ethnicity;
-import com.backend.Model.User;
 import com.backend.Model.Year;
 import org.springframework.data.repository.CrudRepository;
 

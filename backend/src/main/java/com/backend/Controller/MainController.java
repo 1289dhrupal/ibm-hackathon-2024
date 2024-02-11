@@ -9,12 +9,10 @@ import com.backend.Repos.EthnicityRepos;
 import com.backend.Repos.UserRepos;
 import com.backend.Repos.YearRepos;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 @RestController
 public class MainController {
@@ -44,11 +42,13 @@ public class MainController {
 
         yearRepos.save(new Year(0, "PG1"));
         yearRepos.save(new Year(1, "UG1"));
-        yearRepos.save(new Year(2, "PUG3"));
+        yearRepos.save(new Year(2, "UG3"));
 
+        userRepos.save(new User("ab123", "John", "Doe", "LE1 1AB", 0, 0, 0, "this is my bio", "john@doe.com", "441111111111"));
+        userRepos.save(new User("bc456", "Mary", "Sue", "LE1 2JS", 1, 2, 1, "I have just moved to leicester", "mary@sue.com", "03333333333"));
+        
 
-
-        return "I am Alive";
+        return "{\"test\":\"I am Alive\"}";
     }
 
     @PostMapping(value = "/login", produces = "application/json")
@@ -99,22 +99,63 @@ public class MainController {
 
     @GetMapping(value = "/nearby", produces = "application/json")
     @ResponseBody
-    ArrayList<User> getNearby(@RequestParam @NonNull String code,
-                              @RequestParam List<String> ethnicity,
-                              @RequestParam List<String> course,
-                              @RequestParam List<String> year) {
-        ArrayList<User> users = new ArrayList<>();
-        for (User i : userRepos.findAll()) {
+    ArrayList<HashMap<String, String>> getNearby(@RequestParam String code,
+                              @RequestParam(required = false) ArrayList<String> ethnicity,
+                              @RequestParam(required = false) ArrayList<String> course,
+                              @RequestParam(required = false) ArrayList<String> year) {
+                                System.out.println(code);
+        ArrayList<HashMap<String, String>> users = new ArrayList<>();
+        if (ethnicity == null) {
+            ethnicity = new ArrayList<>();
+        }
+        if (course == null) {
+            course = new ArrayList<>();
+        }
+        if (year == null) {
+            year = new ArrayList<>();
+        }
 
 
-            if (i.getLocation().substring(0, 2).equals(code) ||
-                    (ethnicity != null && ethnicity.contains(ethnicityRepos.findById(i.getEthnicity()).get().getEthnicity())) ||
-                    (course != null && course.contains(courseRepos.findById(i.getCourse()).get().getCourse())) ||
-                    (year != null && year.contains(yearRepos.findById(i.getYear()).get().getYear()))) {
 
-                users.add(i);
+        for (User usr : userRepos.findAllByLocationContaining(code)) {
+            if(ethnicity == null && course == null && year == null) {
+                users.add(parseUser(usr));
+            } else if (ethnicity.contains(ethnicityRepos.findById(usr.getEthnicity()).get().getEthnicity())) {
+                users.add(parseUser(usr));
+            } else if (course.contains(courseRepos.findById(usr.getCourse()).get().getCourse())) {
+                users.add(parseUser(usr));
+            } else if (year.contains(yearRepos.findById(usr.getYear()).get().getYear())) {
+                users.add(parseUser(usr));
             }
         }
         return users;
+        
     }
+
+    @GetMapping(value = "/users", produces = "application/json")
+    @ResponseBody
+    ArrayList<HashMap<String, String>> users() {
+        // System.out.println(userRepos.findAll());
+        ArrayList<HashMap<String, String>> out = new ArrayList<>();
+        for (User usr : userRepos.findAll()) {
+            out.add(parseUser(usr));
+        }
+        return out;
+    } 
+
+    HashMap<String, String> parseUser(User usr) {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("userName", usr.getUserName());
+        map.put("firstName", usr.getFirstName());
+        map.put("lastName", usr.getLastName());
+        map.put("bio", usr.getBio());
+        map.put("email", usr.getEmail());
+        map.put("location", usr.getLocation());
+        map.put("phoneNum", usr.getPhoneNum());
+        map.put("course", courseRepos.findById(usr.getCourse()).get().getCourse());
+        map.put("ethnicity", ethnicityRepos.findById(usr.getEthnicity()).get().getEthnicity());
+        map.put("year", yearRepos.findById(usr.getYear()).get().getYear());
+        return map;
+    }
+    
 }
